@@ -1,0 +1,76 @@
+```{r}
+library(tidyverse)
+```
+
+```{r}
+library(readr)
+datos <- read_csv("C://Users//jc124//OneDrive//Documents//EleccionesMagistrados//02.csv")
+View(datos)
+```
+
+```{r}
+datos <- datos %>%
+  select(`Poder de la Unión`, `Persona Candidata`)
+```
+
+```{r}
+datos_separados <- datos %>%
+  separate_rows(`Poder de la Unión`, sep = ",") %>%
+  mutate(`Poder de la Unión` = str_trim(`Poder de la Unión`))  # quitar espacios
+```
+
+```{r}
+ejecutivo <- datos_separados %>% filter(`Poder de la Unión` == "Poder Ejecutivo")
+legislativo <- datos_separados %>% filter(`Poder de la Unión` == "Poder Legislativo")
+judicial <- datos_separados %>% filter(`Poder de la Unión` == "Poder Judicial")
+en_funciones <- datos_separados %>% filter(`Poder de la Unión` == "En Funciones")
+```
+
+```{r}
+print(ejecutivo)
+print(legislativo)
+print(judicial)
+print(en_funciones)
+```
+```{r}
+cat("Poder Ejecutivo:", nrow(ejecutivo), "personas\n")
+cat("Poder Legislativo:", nrow(legislativo), "personas\n")
+cat("Poder Judicial:", nrow(judicial), "personas\n")
+cat("En Funciones:", nrow(en_funciones), "personas\n")
+```
+```{r}
+conteo_poderes <- datos_separados %>%
+  count(`Poder de la Unión`, name = "Total_Candidatas")
+```
+
+```{r}
+library(ggplot2)
+
+ggplot(conteo_poderes, aes(x = `Poder de la Unión`, y = Total_Candidatas, fill = `Poder de la Unión`)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Número de Candidatas y Candidatos por Poder de la Unión",
+       x = "Poder de la Unión",
+       y = "Cantidad de Candidatos") +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
+```{r}
+candidatas_varios_poderes <- datos %>%
+  filter(str_detect(`Poder de la Unión`, ","))
+
+print(candidatas_varios_poderes)
+```
+```{r}
+library(dplyr)
+
+# Junta todas las listas
+todas_juntas <- bind_rows(ejecutivo, legislativo, judicial, en_funciones)
+
+# Quita duplicados por nombre de persona
+total_sin_repetidos <- todas_juntas %>%
+  distinct(`Persona Candidata`) %>%
+  nrow()
+
+cat("Total de personas únicas (sin duplicados):", total_sin_repetidos, "\n")
+```
+
