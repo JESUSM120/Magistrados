@@ -1,0 +1,43 @@
+```{r}
+# install.packages("xlsx")
+# install.packages("readxl")
+# install.packages("gdata")
+library(gdata)
+library(readxl)
+library(ggplot2)
+library(dplyr)
+library(scales)
+```
+```{r}
+datos <- read_excel("C://Users//Banana//Documents//Integrativa//Magistrados//baseDatosCandidatos.xls")
+head(datos)
+```
+```{r}
+ggplot(datos, aes(x = SEXO, fill = SEXO)) +
+  geom_bar(show.legend = FALSE) +
+  geom_text(aes(label = after_stat(count)), stat = "count", vjust = -0.5) +
+  scale_fill_manual(values = c("HOMBRE" = "#45a2ff", "MUJER" = "#ff80f7")) +
+  labs(title = "Distribución por Género",
+       subtitle = "Conteo",
+       x = NULL,
+       y = "Cantidad") +
+  theme_minimal()
+```
+```{r}
+conteo_escolaridad <- datos %>%
+  count(`ESCOLARIDAD`, name = "Frecuencia")
+print(conteo_escolaridad)
+```
+```{r}
+ggplot(conteo_escolaridad, aes(x = `ESCOLARIDAD`, y = Frecuencia, fill = `ESCOLARIDAD`)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Escolaridad de los aspirantes",
+       x = "Nivel academico ",
+       y = "Frecuencia") +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
+
+
+
+
